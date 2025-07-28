@@ -1,12 +1,12 @@
 import winreg
 
 def is_light_mode():
-    """Devuelve True si el sistema está en modo claro, False si está en modo oscuro."""
+    """Returns True if the system is in light mode, False if it is in dark mode."""
     registry = winreg.ConnectRegistry(None, winreg.HKEY_CURRENT_USER)
     key_path = r"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"
     try:
         key = winreg.OpenKey(registry, key_path)
         value, _ = winreg.QueryValueEx(key, "AppsUseLightTheme")
         return value == 1
-    except FileNotFoundError:
+    except OSError:
         return True 

@@ -3,8 +3,8 @@ import tkinter as tk
 class SettingsMenu:
     def __init__(self, parent, esp_image, eng_image):
         """
-        Crea una barra de menú con Settings → Language → Español/English.
-        esp_image y eng_image deben ser objetos PhotoImage ya cargados.
+        Creates a menu bar with Settings → Language → Español/English.
+        esp_image and eng_image must be already loaded PhotoImage objects.
         """
         menubar = tk.Menu(parent)
         settings_menu = tk.Menu(menubar, tearoff=0)

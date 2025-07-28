@@ -4,7 +4,7 @@ class TimeInput:
     def __init__(self, parent, row, columnspan, colors):
         lbl = ctk.CTkLabel(
             parent,
-            text="Tiempo (minutos):",
+            text="Time (minutes):",
             text_color=colors["text"]
         )
         lbl.grid(row=row, column=0, columnspan=columnspan, padx=20, pady=(0,5), sticky="w")

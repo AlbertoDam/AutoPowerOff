@@ -9,7 +9,7 @@ class Header:
 
         self.desc = ctk.CTkLabel(
             frame,
-            text="Introduce los minutos que deseas retrasar el apagado automático del equipo.",
+            text="Enter the number of minutes you want to delay the automatic shutdown of the computer.",
             text_color=colors["text"],
             wraplength=360,
             justify="left",

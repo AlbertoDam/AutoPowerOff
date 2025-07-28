@@ -1,8 +1,8 @@
 from utils.theme_detector import is_light_mode
 
 def get_theme_colors():
-    """Devuelve colores según modo del sistema"""
-    if not is_light_mode():
+    """Returns colors according to system mode"""
+    if is_light_mode():
         return {
             "bg": "#FFFFFF",
             "text": "#1C1C1C",
