@@ -1,9 +1,9 @@
 # AutoPowerOff
 
-Aplicación de escritorio para Windows que permite programar el apagado automático del equipo con opción de cancelación.
+Desktop application for Windows that allows you to schedule automatic shutdown of the computer with a cancellation option.
 
-## Tecnologías
+## Technologies
 
 - Python
 - CustomTkinter
-- PyInstaller (para generar .exe)
+- PyInstaller (to generate .exe)
