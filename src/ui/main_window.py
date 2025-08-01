@@ -1,8 +1,6 @@
 import customtkinter as ctk
 import os
-import tkinter as tk
-from utils.theme_detector import is_light_mode
-from utils.theme_config import get_theme_colors
+from pathlib import Path
 from PIL import Image, ImageTk
 
 from ui.header import Header
@@ -11,39 +9,69 @@ from ui.action_buttons import ActionButtons
 from ui.countdown_display import CountdownDisplay
 from ui.settings_menu import SettingsMenu
 
-class AutoPowerOffApp(ctk.CTk):
-    def __init__(self):
+
+class AutoPowerOffWindow(ctk.CTk):
+    def __init__(self, colors, esp_img=None, eng_img=None):
         super().__init__()
         self.title("Auto Power Off")
         self.resizable(False, False)
-
-        ctk.set_appearance_mode("Light" if is_light_mode() else "Dark")
-        self.colors = get_theme_colors()
+        self.colors = colors
         self.configure(fg_color=self.colors["bg"])
 
-        base = os.path.dirname(__file__)
-        icon_path = os.path.abspath(os.path.join(base, "../..", "assets", "icon.ico"))
-        if os.path.exists(icon_path):
-            self.iconbitmap(icon_path)
+        base = Path(__file__).parent 
+        assets = (base.parent / "assets").resolve()
+        icon_path = assets / "icon.ico"
+        if icon_path.exists():
+            try:
+                self.iconbitmap(str(icon_path))
+            except Exception:
+                pass 
 
-        esp_img = ImageTk.PhotoImage(
-            Image.open(os.path.join(base, "../..", "assets", "esp.ico")).resize((16,16))
-        )
-        eng_img = ImageTk.PhotoImage(
-            Image.open(os.path.join(base, "../..", "assets", "gb.ico")).resize((16,16))
-        )
-        self._esp_img, self._eng_img = esp_img, eng_img
+        def make_flag(name):
+            for ext in (".ico", ".png"):
+                candidate = assets / f"{name}{ext}" if not name.lower().endswith(ext) else assets / name
+                if candidate.exists():
+                    try:
+                        img = Image.open(candidate).convert("RGBA")
+                        img = img.resize((16, 16), Image.LANCZOS)
+                        return ImageTk.PhotoImage(img)
+                    except Exception:
+                        continue
+            return None
 
-        SettingsMenu(self, esp_img, eng_img)
+        self._esp_img = esp_img if esp_img is not None else make_flag("esp")
+        self._eng_img = eng_img if eng_img is not None else make_flag("gb")
 
+        SettingsMenu(self, self._esp_img, self._eng_img)
+
+        for i in range(7):
+            self.grid_rowconfigure(i, weight=0)
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
 
         Header(self, row=0, columnspan=2, colors=self.colors)
-        TimeInput(self, row=1, columnspan=2, colors=self.colors)
-        ActionButtons(self, row=3, columnspan=2, colors=self.colors)
-        CountdownDisplay(self, row=4, columnspan=2, colors=self.colors)
+        self.time_input = TimeInput(self, row=1, columnspan=2, colors=self.colors)
+        self.buttons = ActionButtons(self, row=5, columnspan=2, colors=self.colors)
+        self.countdown = CountdownDisplay(self, row=6, columnspan=2, colors=self.colors)
+
+        self.start_button = self.buttons.start
+        self.cancel_button = self.buttons.cancel
+
+        self.on_start = None
+        self.on_cancel = None
+
+        self.time_input.on_validity_change = lambda valid: self.start_button.configure(state="normal" if valid else "disabled")
+        self.start_button.configure(state="normal" if self.time_input.is_valid() else "disabled")
+
+        self.start_button.configure(command=lambda: self.on_start() if self.on_start else None)
+        self.cancel_button.configure(command=lambda: self.on_cancel() if self.on_cancel else None)
 
         self.update_idletasks()
         w, h = self.winfo_reqwidth(), self.winfo_reqheight()
-        self.geometry(f"{w}x{h}")
+        self.geometry(f"{w}x{h+5}")
+
+    def set_countdown(self, mins: int, secs: int):
+        self.countdown.set_time(mins, secs)
+
+    def set_message(self, msg: str):
+        self.countdown.set_message(msg)
