@@ -1,5 +1,5 @@
-from ui.main_window import AutoPowerOffApp
+from controller import AppController
 
 if __name__ == "__main__":
-    app = AutoPowerOffApp()
-    app.mainloop()
+    app = AppController()
+    app.run()

@@ -44,5 +44,4 @@ class ShutdownTimer:
             if self.timer_running and self.remaining_time <= 0:
                 if self._on_finish:
                     self._on_finish()
-                # Apagado real; comentar si solo pruebas
                 os.system("shutdown /s /t 0")
